@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet id="1" author="lkarion">
+        <!--        BLOG_USER-->
+        <createTable tableName="blog_user">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_admin" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_on" type="date"/>
+            <column name="created_on" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="varchar"/>
+            <column name="updated_by_blog_user_id" type="bigint">
+                <constraints referencedTableName="blog_user"
+                             referencedColumnNames="id"
+                             foreignKeyName="BLOG_USER_ID_BLOG_USER_UPDATED_BY_BLOG_USER_ID"/>
+            </column>
+            <column name="created_by_blog_user_id" type="bigint">
+                <constraints referencedTableName="blog_user"
+                             referencedColumnNames="id"
+                             foreignKeyName="BLOG_USER_ID_BLOG_USER_CREATED_BY_BLOG_USER_ID"/>
+            </column>
+        </createTable>
+        <!--        BLOG_POST-->
+        <createTable tableName="blog_post">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="blog_user_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="blog_user"
+                             referencedColumnNames="id"
+                             foreignKeyName="BLOG_USER_ID_BLOG_POST_BLOG_USER_ID"/>
+            </column>
+            <column name="post_status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_on" type="date" defaultValue="NOW()"/>
+            <column name="created_on" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <!--        TAG-->
+        <createTable tableName="tag">
+            <column type="bigint" name="id" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="text" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <!--POST_TAG-->
+        <createTable tableName="post_tag">
+            <column type="bigint" name="id" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="blog_post_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_blog_post"
+                                 baseTableName="post_tag" baseColumnNames="blog_post_id"
+                                 referencedTableName="blog_post" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fk_tag"
+                                 baseTableName="post_tag" baseColumnNames="tag_id"
+                                 referencedTableName="tag" referencedColumnNames="id"/>
+
+        <!--        BLOG_USER_PASSWORD-->
+        <createTable tableName="blog_user_password">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="password_hash" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="salt" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="blog_user_id" type="bigint">
+                <constraints referencedTableName="blog_user"
+                             referencedColumnNames="id"
+                             foreignKeyName="BLOG_USER_ID_BLOG_USER_PASSWORD_BLOG_USER_ID"/>
+            </column>
+        </createTable>
+
+        <!--        BLOG_USER_SESSION-->
+        <createTable tableName="blog_user_session">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="session_id" type="varchar(255)">
+                <constraints unique="true"
+                             nullable="false"/>
+            </column>
+            <column name="expiration_time" type="datetime"/>
+            <column name="blog_user_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="blog_user"
+                             referencedColumnNames="id"
+                             foreignKeyName="BLOG_USER_ID_BLOG_USER_SESSION_BLOG_USER_ID"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>
